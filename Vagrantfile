@@ -15,10 +15,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # config.vm.forward_agent = true
 
 
-  # config.vm.provision "puppet" do |puppet|
-  #   puppet.manifests_path = "manifests"
-  #   puppet.manifest_file  = "site.pp"
-  # end
+  # puppet config
+  config.vm.provision "puppet" do |puppet|
+    puppet.manifests_path = "puppet/manifests"
+    puppet.manifest_file  = "default.pp"
+    puppet.module_path = "puppet/modules"
+    puppet.hiera_config_path = "puppet/hiera.yaml"
+  end
+
+  # share the puppet folder to /etc/puppet
+  config.vm.synced_folder "./puppet/", "/etc/puppet"
+
+  # install librarian-puppet, install puppet modules
+  config.vm.provision "shell", path: "puppet/librarian_bootstrap.sh"
+
 
   config.vm.define "web" do |web|
     # web.vm.box = "centos-6.5-puppet"
@@ -45,7 +55,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "search" do |search|
     search.vm.hostname = "wdcsr1.cfpb.local"
-
-  end
 
 end
