@@ -14,6 +14,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/centos-65-x64-virtualbox-puppet.box"
   # config.vm.forward_agent = true
 
+  # install librarian-puppet, install puppet modules
+  config.vm.provision "shell", path: "puppet/librarian_bootstrap.sh"
 
   # puppet config
   config.vm.provision "puppet" do |puppet|
@@ -26,16 +28,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # share the puppet folder to /etc/puppet
   config.vm.synced_folder "./puppet/", "/etc/puppet"
 
-  # install librarian-puppet, install puppet modules
-  config.vm.provision "shell", path: "puppet/librarian_bootstrap.sh"
-
-
   config.vm.define "web" do |web|
     # web.vm.box = "centos-6.5-puppet"
 
     web.vm.network "forwarded_port", guest: 80, host: 6000
-    web.vm.hostname = "app.example.com"
-    web.vm.hostname = "web"
     web.vm.hostname = "wdcweb1.cfpb.local"
   end
 
@@ -55,5 +51,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.define "search" do |search|
     search.vm.hostname = "wdcsr1.cfpb.local"
+  end
 
 end
